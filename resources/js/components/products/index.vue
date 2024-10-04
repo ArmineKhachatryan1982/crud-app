@@ -1,6 +1,17 @@
+<script setup>
+import { useRouter } from "vue-router"
+const router = useRouter()
+
+const newProduct = () => {
+    router.push('/products/create')
+}
+
+
+</script>
+
 <template>
     <section>
-        
+
         <div class="products__list table  my-3">
 
               <div class="customers__titlebar dflex justify-content-between align-items-center">
@@ -8,7 +19,7 @@
                       <h1 class="my-1">Products</h1>
                   </div>
                   <div class="customers__titlebar--item">
-                      <button class="btn btn-secondary my-1" >
+                      <button class="btn btn-secondary my-1" @click="newProduct" >
                           Add Product
                       </button>
                   </div>

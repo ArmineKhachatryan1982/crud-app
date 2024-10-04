@@ -1,3 +1,21 @@
+<script setup>
+import { reactive } from "vue"
+
+const form =reactive({
+    name: "",
+    description: "",
+    image: "",
+    type: "",
+    quantity: "",
+    price: ""
+})
+
+    const handleSave = () =>{
+        axios.post('/api/products',form)
+    }
+
+</script>
+
 <template>
     <section>
         <div class="products__create ">
@@ -9,7 +27,7 @@
                 </div>
                 <div class="products__create__titlebar--item">
 
-                    <button class="btn btn-secondary ml-1" >
+                    <button class="btn btn-secondary ml-1" @click ="handleSave" >
                         Save
                     </button>
                 </div>
@@ -19,10 +37,10 @@
                 <div class="products__create__main">
                     <div class="products__create__main--addInfo card py-2 px-2 bg-white">
                         <p class="mb-1">Name</p>
-                        <input type="text" class="input" >
+                        <input type="text" class="input" v-model="form.name" >
 
                         <p class="my-1">Description (optional)</p>
-                        <textarea cols="10" rows="5" class="textarea" ></textarea>
+                        <textarea cols="10" rows="5" class="textarea" v-model="form.description" ></textarea>
 
                         <div class="products__create__main--media--images mt-2">
                         <ul class="products__create__main--media--images--list list-unstyled">
@@ -35,7 +53,7 @@
                             <li class="products__create__main--media--images--item">
                                 <form class="products__create__main--media--images--item--form">
                                     <label class="products__create__main--media--images--item--form--label" for="myfile">Add Image</label>
-                                    <input class="products__create__main--media--images--item--form--input" type="file" id="myfile" >
+                                    <input class="products__create__main--media--images--item--form--input" type="file" id="myfile" @click="handleFileChange" >
                                 </form>
                             </li>
                         </ul>
