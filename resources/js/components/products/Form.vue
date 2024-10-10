@@ -9,6 +9,31 @@ const form =reactive({
     quantity: "",
     price: ""
 })
+const getImage = () =>{
+    let image = "/upload/no-image.png"
+    if(form.image){
+        // console.log('form.image')
+        if(form.image.indexOf("base64")!=-1){
+            // console.log('(form.image.indexOf("base64")!=-1)')
+            image = form.image
+        }else{
+            image = "/upload/"+ form.image
+        }
+    }
+
+    return image
+}
+
+const handleFileChange = (e) =>{
+
+    let file = e.target.files[0]
+
+    let reader = new FileReader()
+    reader.onloadend = (file) => {
+        form.image = reader.result
+    }
+    reader.readAsDataURL(file)
+}
 
     const handleSave = () =>{
         axios.post('/api/products',form)
@@ -46,14 +71,17 @@ const form =reactive({
                         <ul class="products__create__main--media--images--list list-unstyled">
                             <li class="products__create__main--media--images--item">
                                 <div class="products__create__main--media--images--item--imgWrapper">
-                                    <img class="products__create__main--media--images--item--img" alt="" />
+                                    <img class="products__create__main--media--images--item--img" alt=""
+                                    :src="getImage()"
+                                    />
                                 </div>
+                                <input type="file"  @change="handleFileChange">
                             </li>
                             <!-- upload image small -->
                             <li class="products__create__main--media--images--item">
                                 <form class="products__create__main--media--images--item--form">
                                     <label class="products__create__main--media--images--item--form--label" for="myfile">Add Image</label>
-                                    <input class="products__create__main--media--images--item--form--input" type="file" id="myfile" @click="handleFileChange" >
+                                    <!-- <input class="products__create__main--media--images--item--form--input" type="file" id="myfile" @change="handleFileChange" > -->
                                 </form>
                             </li>
                         </ul>
@@ -69,21 +97,21 @@ const form =reactive({
                         <!-- Product unit -->
                         <div class="my-3">
                             <p>Product type</p>
-                            <input type="text" class="input" >
+                            <input type="text" class="input" v-mode="form.type" >
                         </div>
                         <hr>
 
                         <!-- Product invrntory -->
                         <div class="my-3">
                             <p>Inventory</p>
-                            <input type="text" class="input" >
+                            <input type="text" class="input"  v-mode="form.quantity"> >
                         </div>
                         <hr>
 
                         <!-- Product Price -->
                         <div class="my-3">
                             <p>Price</p>
-                            <input type="text" class="input" >
+                            <input type="text" class="input" v-mode="form.price">
                         </div>
                     </div>
 
@@ -92,7 +120,7 @@ const form =reactive({
             <!-- Footer Bar -->
             <div class="dflex justify-content-between align-items-center my-3">
                 <p ></p>
-                <button class="btn btn-secondary" >Save</button>
+                <button class="btn btn-secondary"  @click=handleSave>Save</button>
             </div>
         </div>
     </section>
