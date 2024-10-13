@@ -1,16 +1,98 @@
 <script setup>
 import { useRouter } from "vue-router"
+import { ref, onMounted,watch  } from  "vue"
+
 const router = useRouter()
+
+
+
+let products = ref([])
+let links = ref([])
+let searchQuery = ref('')
+// =======show images from folder==========
+ const ourImage = (img) =>{
+    return "/upload/"+img
+ }
+
+onMounted(async () => {
+    getProducts()
+})
+watch(searchQuery,() => {
+    getProducts()
+})
+
+
 
 const newProduct = () => {
     router.push('/products/create')
+
 }
 
+const getProducts = async () => {
+    let response = await axios.get ( '/api/products?&searchQuery='+searchQuery.value)
+    .then((response) => {
+console.log(response.data.products)
+        products.value = response.data.products.data
+        links.value = response.data.products.links
+    })
+}
+const changePage =(link) =>{
+    console.log(link)
+    if(!link.url || link.active){
+        return
+    }
+    axios.get(link.url)
+        .then((response) =>{
+            products.value = response.data.products.data
+            links.value = response.data.products.link
+        })
+}
+
+ const  onEdit = (id) =>{
+    console.log(id)
+        router.push(`/products/${id}/edit`)
+    }
+
+    // =======delete==============
+
+    const deleteProduct = (id) =>{
+            Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    axios.delete(`/api/products/${id}`)
+                        .then(()=>{
+                           Swal.fire({
+                                title: "Deleted!",
+                                text: "Your file has been deleted.",
+                                icon: "success"
+                                });
+
+                                getProducts()
+
+                        })
+                }
+            });
+    }
 
 </script>
 
 <template>
     <section>
+        <div class="table-ssearch">
+            <div>
+                <button>search</button>
+                <input type="text" placeholder="searchQuery" v-model="searchQuery"/>
+            </div>
+
+        </div>
 
         <div class="products__list table  my-3">
 
@@ -40,33 +122,49 @@ const newProduct = () => {
               </div>
 
               <!-- product 1 -->
-              <div class="table--items products__list__item" >
+              <div class="table--items products__list__item"  v-for="product in products" :key="product.id">
                   <div class="products__list__item--imgWrapper">
-                      <img class="products__list__item--img" src="/public/upload/1.jpg"  style="height: 40px;">
+                      <img class="products__list__item--img" style="height: 40px;"
+
+                       :src="ourImage(product.image)"
+                        />
                   </div>
                   <a href="# " class="table--items--col2">
-                      Product name
+                      {{product.name}}
                   </a>
                   <p class="table--items--col2">
-                      type
+                    {{product.type}}
                   </p>
                   <p class="table--items--col3">
-                      10
+                      {{product.quantity}}
                   </p>
                   <div>
-                      <button class="btn-icon btn-icon-success" >
-                          <!-- <i class="fas fa-pencil-alt"></i> -->
+                      <button class="btn-icon btn-icon-success" @click="onEdit(product.id)">
+
                           <i class="fas fa-edit"></i>
                       </button>
-                      <button class="btn-icon btn-icon-danger" >
+                      <button class="btn-icon btn-icon-danger" @click="deleteProduct(product.id)" >
                           <i class="far fa-trash-alt"></i>
                       </button>
                   </div>
 
               </div>
 
-
+            <div class="table-paginate">
+                <div class="pagination">
+                    <a
+                    href="#"
+                    class="btn"
+                    v-for="(link,index) in links"
+                    :key="index"
+                    v-html="link.lable"
+                    :class="{active: link.active,disabled:!link.url }"
+                    @click="changePage(link)"
+                        ></a>
+                        </div>
+            </div>
           </div>
+
 
     </section>
 </template>
