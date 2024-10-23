@@ -67,7 +67,279 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 https://www.youtube.com/watch?v=SjeYhB5O45Q&t=3002s
 
-32. to save file we use intervention image
+2.  in vite.config.js added
+    import vue from '@vitejs/plugin-vue'
+    and call vue()
+3.  welcome blade in heade add
+    @vite(['resources/css/app.css','resources/js/app.js'])
+
+4.  resources/js/components/  
+    createing components folder and in it App.vue file and put
+    <template>
+    <div>
+    <h1>Hello !</h1>
+    </div>
+    </template>
+5.  resources/js/app.js add
+    import { createApp } from 'vue'
+
+        import app from './components/App.vue'
+
+        createApp(app).mount("#app")
+
+    if we do npm run dev we so hello ! on screen
+
+6.  in resources/js add router folder in it add index.js in which we create route configuration
+
+        import { createRouter, createWebHistory } from  "vue-router";
+
+        const routes = [
+        {
+        	path:'/',
+        	name:'products.index',
+        	component:productIndex
+        }
+        ]
+
+        const router = createRouter({
+        history: createWebHistory(),
+        routes
+        })
+
+        export default router
+
+7.  in components creating products folder and in it index.vue
+
+<template>
+    <div>
+        <h1>Listing of products</h1>
+    </div>
+</template>
+
+8. in index.js we add  
+   import productIndex from '../components/products/Index.vue'
+9. in App.vue I change content
+   <template>
+   <router-view/>
+   </template>
+   10 . in app.js added
+   import router from './router'
+   and change
+   createApp(app).use(router).mount("#app")
+10. index.js we have
+    import { createRouter, createWebHistory } from "vue-router";
+
+import productIndex from '../components/products/Index.vue'
+const routes = [
+{
+path:'/',
+name:'products.index',
+component:productIndex
+}
+]
+
+const router = createRouter({
+history: createWebHistory(),
+routes
+})
+export default router
+========on server I saw Listing of products
+==========next step if we dont find page return not found 12. in components folder creating notFound.vue and add
+<template>
+<div>
+<h1>Page not found</h1>
+<router-link to="/">Go Back</router-link>
+</div>
+</template> 13. in index.js add
+import notFound from '../components/notFound.vue'
+and we have
+import { createRouter, createWebHistory } from "vue-router";
+
+import productIndex from '../components/products/Index.vue'
+import notFound from '../components/notFound.vue'
+const routes = [
+{
+path:'/',
+name:'products.index',
+component:productIndex
+},
+{
+path:'/:pathMatch(.*)*',
+name:'notfound',
+component: notFound
+}
+]
+
+const router = createRouter({
+history: createWebHistory(),
+routes
+})
+export default router
+
+14. in web.php added this routs
+
+    Route::get('/{pathMatch}', function (){
+    return view('welcome');
+    })->where('pathMatch',".\*");
+
+15 I add template in index.vue and add css in resources/css/app.css and for showing image I create in public folder upload folder and pass 1.jpg in it
+16.createing migration with -mc m for migration c for controller 17. in product migration add
+Schema::create('products', function (Blueprint $table) {
+$table->id();
+$table->string('name')->nullable();
+$table->text('description')->nullable();
+$table->string('image')->nullable();
+$table->string('type')->nullable();
+$table->integer('quantity')->nullable();
+$table->integer('price')->nullable();
+$table->timestamps();
+}); 18. for add product we will add route, in index.js in const route array we add
+{
+path:'/products/create',
+name:'products.create',
+component:productForm
+}, 19. in components/products create Form.vue and add
+<template>
+<div>
+<h1>hello !</h1>
+</div>
+</template> 20. index.js add componenet
+
+import productForm from '../components/products/Form.vue';
+
+and now file will be
+
+import { createRouter, createWebHistory } from "vue-router";
+
+import productIndex from '../components/products/Index.vue'
+
+import productForm from '../components/products/Form.vue';
+
+import notFound from '../components/notFound.vue'
+const routes = [
+{
+path:'/',
+name:'products.index',
+component:productIndex
+},
+{
+path:'/products/create',
+name:'products.create',
+component:productForm
+},
+{
+path:'/:pathMatch(.*)*',
+name:'notfound',
+component: notFound
+}
+]
+
+const router = createRouter({
+history: createWebHistory(),
+routes
+})
+export default router
+
+21. index.vue we add click Add Product button on newProduct method
+
+        		<div class="customers__titlebar--item">
+                      <button class="btn btn-secondary my-1" @click="newProduct" >
+                          Add Product
+                      </button>
+                  </div>
+
+    and added script before template in index.vue
+
+    <script setup>
+    	import { useRouter } from "vue-router"
+    	const router = useRouter()
+    
+    	const newProduct = () => {
+    		router.push('/products/create')
+    	}
+    
+    
+    </script>
+
+22. already in products/create page where we save our form which is in form.vue
+    we implement handleSave method for that
+    <button class="btn btn-secondary ml-1" @click ="handleSave" >
+    Save
+    </button>
+
+in script we declare our route for save in which we passing our form data
+const handleSave = () =>{
+axios.post('/api/products',form)
+} 23. creating our reactive object
+
+    const form =reactive({
+    	name: "",
+    	description: "",
+    	image: "",
+    	type: "",
+    	quantity: "",
+    	price: ""
+    })
+    and we should import this reactive from vue
+    import { reactive } from "vue"
+
+24. and now we use our v-model our inputs
+
+v-model="form.name"
+v-model="form.description"
+
+25. for file we shell call change function
+
+<input type="file" id="myfile" @change="handleFileChange" >
+
+const handleFileChange = (e) =>{
+let file = e.target.files[0]
+let reader = new FileReader()
+
+     reader.onloadend = (file) => {
+        form.image = reader.result
+    }
+    reader.readAsDataURL(file)
+
+}
+
+26. then in img teg declare getImage function
+    <img  alt="" :src="getImage()" />
+
+27. via this code show no-image.png but we dont do any action
+    const getImage = () =>{
+    let image = "/upload/no-image.png"
+    return image
+    }
+28. now after @change=handleFileChange method we can upload file and see result in desktop
+    we add if condition
+
+const getImage = () =>{
+let image = "/upload/no-image.png"
+if(form.image){
+console.log('form.image')
+if(form.image.indexOf("base64")!=-1){
+console.log('(form.image.indexOf("base64")!=-1)')
+image = form.image
+}else{
+image = "/upload/"+ form.image
+}
+}
+console.log(image)
+return image
+} 29. add other v-modal 30. for clicking save putton give error
+Form.vue:39
+POST http://127.0.0.1:8000/api/products 405 (Method Not Allowed)
+we dont define that routes, we can create it in web but we create it in api for that
+
+php artisan install:api
+
+31. after that we shell include HasApiTokens in User model
+32. in api route add
+
+    Route::post('/products',[ProductController::class,'store']);
+
+33. to save file we use intervention image
     https://intervention.io/
 
     https://image.intervention.io/v3/introduction/frameworks
@@ -93,7 +365,7 @@ https://www.youtube.com/watch?v=SjeYhB5O45Q&t=3002s
             $product->image="no-image.png";
         }
 
-33. public function store(Request $request){
+34. public function store(Request $request){
 
            $product = new Product();
            $product->name = $request->name;
@@ -120,7 +392,7 @@ https://www.youtube.com/watch?v=SjeYhB5O45Q&t=3002s
 
     }
 
-34. after saving product we need to redirect home page
+35. after saving product we need to redirect home page
     for that, in form.vue file in script we include
     import { useRouter } from "vue-router"
     const router=useRouter()
@@ -133,10 +405,10 @@ https://www.youtube.com/watch?v=SjeYhB5O45Q&t=3002s
     })
     }
 
-35. after saving product we will show alert for that install sweetalert2
+36. after saving product we will show alert for that install sweetalert2
     npm install sweetalert2v
 
-36. in resources\js\app.js
+37. in resources\js\app.js
 
 import Swal from 'sweetalert2'
 window.Swal = Swal
@@ -244,10 +516,10 @@ import { ref, onMounted } from "vue" 41. we shell in api.php de
               </div>
 
 ========================== pagination=================================
-  
+
 45. for pagination we make in controller paginate
-$products = $products->latest()->paginate(2);
-and in index.vue
+    $products = $products->latest()->paginate(2);
+    and in index.vue
 
 add data
 const getProducts = async () => {
@@ -315,7 +587,6 @@ in template we have
     let response = await axios.get ( '/api/products?&searchQuery='+searchQuery.value)v
 
 49. make shoor to call searchQuery inside of watch hook
-
 
     watch(searchQuery,() => {
     getProducts()
