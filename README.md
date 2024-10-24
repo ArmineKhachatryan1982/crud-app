@@ -67,6 +67,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 https://www.youtube.com/watch?v=SjeYhB5O45Q&t=3002s
 
+1.  npm install vue@latest vue-loader@latest vue-router@latest @vitejs/plugin-vue --save-dev
 2.  in vite.config.js added
     import vue from '@vitejs/plugin-vue'
     and call vue()
@@ -146,6 +147,7 @@ export default router
 ========on server I saw Listing of products
 ==========next step if we dont find page return not found 12. in components folder creating notFound.vue and add
 <template>
+
 <div>
 <h1>Page not found</h1>
 <router-link to="/">Go Back</router-link>
@@ -200,6 +202,7 @@ name:'products.create',
 component:productForm
 }, 19. in components/products create Form.vue and add
 <template>
+
 <div>
 <h1>hello !</h1>
 </div>

@@ -109,7 +109,7 @@ const handleFileChange = (e) =>{
             })
     }
 
-   
+
 
 </script>
 
@@ -134,7 +134,7 @@ const handleFileChange = (e) =>{
                     </button>
                 </div>
             </div>
-
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
             <div class="products__create__cardWrapper mt-2">
                 <div class="products__create__main">
                     <div class="products__create__main--addInfo card py-2 px-2 bg-white">
